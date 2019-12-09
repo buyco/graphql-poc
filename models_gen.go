@@ -2,6 +2,10 @@
 
 package go_graphql_poc
 
+type DeleteTodo struct {
+	ID string `json:"id"`
+}
+
 type NewTodo struct {
 	Text   string `json:"text"`
 	UserID string `json:"userId"`
