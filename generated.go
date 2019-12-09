@@ -45,6 +45,7 @@ type ComplexityRoot struct {
 	Mutation struct {
 		CreateTodo func(childComplexity int, input NewTodo) int
 		CreateUser func(childComplexity int, input NewUser) int
+		DeleteTodo func(childComplexity int, input DeleteTodo) int
 	}
 
 	Query struct {
@@ -67,6 +68,7 @@ type ComplexityRoot struct {
 
 type MutationResolver interface {
 	CreateTodo(ctx context.Context, input NewTodo) (*Todo, error)
+	DeleteTodo(ctx context.Context, input DeleteTodo) (bool, error)
 	CreateUser(ctx context.Context, input NewUser) (*User, error)
 }
 type QueryResolver interface {
@@ -112,6 +114,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.CreateUser(childComplexity, args["input"].(NewUser)), true
+
+	case "Mutation.deleteTodo":
+		if e.complexity.Mutation.DeleteTodo == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_deleteTodo_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.DeleteTodo(childComplexity, args["input"].(DeleteTodo)), true
 
 	case "Query.todos":
 		if e.complexity.Query.Todos == nil {
@@ -241,21 +255,30 @@ type User {
   id: ID!
   name: String!
 }
+
 type Mutation {
   createTodo(input: NewTodo!): Todo!
+  deleteTodo(input: DeleteTodo!): Boolean!
   createUser(input: NewUser!): User!
+}
+
+input DeleteTodo {
+  id: ID!
 }
 input NewTodo {
   text: String!
-  userId: String!
+  userId: ID!
 }
+
 input NewUser {
   name: String!
 }
+
 type Query {
   todos: [Todo!]!
   users: [User!]!
-}`},
+}
+`},
 )
 
 // endregion ************************** generated!.gotpl **************************
@@ -282,6 +305,20 @@ func (ec *executionContext) field_Mutation_createUser_args(ctx context.Context, 
 	var arg0 NewUser
 	if tmp, ok := rawArgs["input"]; ok {
 		arg0, err = ec.unmarshalNNewUser2githubᚗcomᚋdefgenxᚋgoᚑgraphqlᚑpocᚐNewUser(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_deleteTodo_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 DeleteTodo
+	if tmp, ok := rawArgs["input"]; ok {
+		arg0, err = ec.unmarshalNDeleteTodo2githubᚗcomᚋdefgenxᚋgoᚑgraphqlᚑpocᚐDeleteTodo(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -382,6 +419,50 @@ func (ec *executionContext) _Mutation_createTodo(ctx context.Context, field grap
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
 	return ec.marshalNTodo2ᚖgithubᚗcomᚋdefgenxᚋgoᚑgraphqlᚑpocᚐTodo(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_deleteTodo(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+		ec.Tracer.EndFieldExecution(ctx)
+	}()
+	rctx := &graphql.ResolverContext{
+		Object:   "Mutation",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_deleteTodo_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	rctx.Args = args
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().DeleteTodo(rctx, args["input"].(DeleteTodo))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Mutation_createUser(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -1950,6 +2031,24 @@ func (ec *executionContext) ___Type_ofType(ctx context.Context, field graphql.Co
 
 // region    **************************** input.gotpl *****************************
 
+func (ec *executionContext) unmarshalInputDeleteTodo(ctx context.Context, obj interface{}) (DeleteTodo, error) {
+	var it DeleteTodo
+	var asMap = obj.(map[string]interface{})
+
+	for k, v := range asMap {
+		switch k {
+		case "id":
+			var err error
+			it.ID, err = ec.unmarshalNID2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputNewTodo(ctx context.Context, obj interface{}) (NewTodo, error) {
 	var it NewTodo
 	var asMap = obj.(map[string]interface{})
@@ -1964,7 +2063,7 @@ func (ec *executionContext) unmarshalInputNewTodo(ctx context.Context, obj inter
 			}
 		case "userId":
 			var err error
-			it.UserID, err = ec.unmarshalNString2string(ctx, v)
+			it.UserID, err = ec.unmarshalNID2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -2017,6 +2116,11 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			out.Values[i] = graphql.MarshalString("Mutation")
 		case "createTodo":
 			out.Values[i] = ec._Mutation_createTodo(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "deleteTodo":
+			out.Values[i] = ec._Mutation_deleteTodo(ctx, field)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -2425,6 +2529,10 @@ func (ec *executionContext) marshalNBoolean2bool(ctx context.Context, sel ast.Se
 		}
 	}
 	return res
+}
+
+func (ec *executionContext) unmarshalNDeleteTodo2githubᚗcomᚋdefgenxᚋgoᚑgraphqlᚑpocᚐDeleteTodo(ctx context.Context, v interface{}) (DeleteTodo, error) {
+	return ec.unmarshalInputDeleteTodo(ctx, v)
 }
 
 func (ec *executionContext) unmarshalNID2string(ctx context.Context, v interface{}) (string, error) {
