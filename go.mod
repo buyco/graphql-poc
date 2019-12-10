@@ -5,11 +5,14 @@ go 1.13
 require (
 	github.com/99designs/gqlgen v0.10.2
 	github.com/buyco/keel v0.0.4
+	github.com/cespare/reflex v0.2.0 // indirect
 	github.com/go-playground/universal-translator v0.17.0 // indirect
 	github.com/gorilla/handlers v1.4.2
 	github.com/gorilla/mux v1.7.3
 	github.com/iancoleman/strcase v0.0.0-20191112232945-16388991a334
+	github.com/kballard/go-shellquote v0.0.0-20180428030007-95032a82bc51 // indirect
 	github.com/leodido/go-urn v1.2.0 // indirect
+	github.com/ogier/pflag v0.0.1 // indirect
 	github.com/rs/cors v1.7.0
 	github.com/sirupsen/logrus v1.4.2
 	github.com/thoas/go-funk v0.5.0
