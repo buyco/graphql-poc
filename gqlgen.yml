@@ -12,7 +12,7 @@ model:
 resolver:
   filename: resolver.go
   type: Resolver
-models:
-  Todo:
-    model: github.com/defgenx/go-graphql-poc.Todo
+#models:
+#  Todo:
+#    model: github.com/defgenx/go-graphql-poc.Todo
 autobind: []
