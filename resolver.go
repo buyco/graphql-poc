@@ -1,4 +1,5 @@
 package go_graphql_poc
+
 //go:generate go run github.com/99designs/gqlgen
 import (
 	context "context"

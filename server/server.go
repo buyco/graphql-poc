@@ -45,6 +45,8 @@ func runWebServer(ctx context.Context, app *core.App) {
 		Handler:      handlers.LoggingHandler(os.Stdout, app.Router),
 	}
 
+	log.Infof("Server started on: %s", srv.Addr)
+
 	go closeWebServer(ctx, srv)
 
 	castPeriod, err := initRetryServerPeriod()

@@ -5,6 +5,7 @@ import (
 	"github.com/buyco/keel/pkg/app"
 	go_graphql_poc "github.com/defgenx/go-graphql-poc"
 	"github.com/gorilla/mux"
+	"github.com/rs/cors"
 	"net/http"
 )
 
@@ -39,4 +40,10 @@ func (r *Router) setGraphQLRoutes() {
 	r.Router.HandleFunc("/health", healthCheck).Name("HealthCheck").Methods("GET")
 	r.Router.HandleFunc("/", handler.Playground("GraphQL playground", "/query"))
 	r.Router.HandleFunc("/query", handler.GraphQL(go_graphql_poc.NewExecutableSchema(go_graphql_poc.Config{Resolvers: &go_graphql_poc.Resolver{}})))
+
+	r.Router.Use(cors.New(cors.Options{
+		AllowedOrigins:   []string{"*"},
+		AllowCredentials: true,
+		Debug:            true,
+	}).Handler)
 }
